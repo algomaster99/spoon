@@ -568,6 +568,9 @@ public class SpoonPom implements SpoonResource {
 				throw new SpoonException("M2_HOME must be initialized to use this MavenLauncher constructor.");
 			}
 		}
+		else {
+			LOGGER.warn("Path to mvn is fetched using M2_HOME. Please have mvn binary on PATH as usage of M2_HOME has been deprecated in Maven 3.5.");
+		}
 		generateClassPathFile(new File(mvnHome), sourceType, LOGGER, forceRefresh);
 
 		List<File> classPathPrints;
