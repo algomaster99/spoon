@@ -205,9 +205,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 		}
 
 		private boolean isPackageImportedViaWildcardAndUnresolved(CtPackageReference packageReference) {
-			return compilationUnit.getImports().stream().anyMatch(
-					ctImport -> ctImport.toString().contains(packageReference.toString())
-							&& ctImport.getImportKind() == CtImportKind.UNRESOLVED);
+			return compilationUnit.getImports().stream()
+					.filter(ctImport -> ctImport.getImportKind() == CtImportKind.UNRESOLVED)
+					.anyMatch(ctImport -> ((CtUnresolvedImport) ctImport).getUnresolvedReference().equals(packageReference+".*"));
 		}
 
 		void onCompilationUnitProcessed(CtCompilationUnit compilationUnit) {
