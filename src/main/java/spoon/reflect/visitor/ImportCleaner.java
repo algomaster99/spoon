@@ -37,15 +37,7 @@ import spoon.support.Experimental;
 import spoon.support.util.ModelList;
 import spoon.support.visitor.ClassTypingContext;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -176,6 +168,9 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				//it is reference to a type of this CompilationUnit. Do not add it
 				return;
 			}
+			if (hasBeenImported(topLevelTypeRef)) {
+				return;
+			}
 			CtPackageReference packageRef = topLevelTypeRef.getPackage();
 			if (packageRef == null) {
 				return;
@@ -272,6 +267,22 @@ public class ImportCleaner extends ImportAnalyzer<ImportCleaner.Context> {
 				if (toRemove.equals(imp) || toRemoveStr.equals(imp.toString())) {
 					it.remove();
 					return true;
+				}
+			}
+			return false;
+		}
+
+		private boolean hasBeenImported(CtTypeReference<?> typeReference) {
+			for (CtImport ctImport: compilationUnit.getImports()) {
+				if (ctImport instanceof CtUnresolvedImport) {
+					if (((CtUnresolvedImport) ctImport).getUnresolvedReference().equals(typeReference.toString())) {
+						return true;
+					}
+				}
+				else {
+					if (ctImport.getReference().equals(typeReference)) {
+						return true;
+					}
 				}
 			}
 			return false;
