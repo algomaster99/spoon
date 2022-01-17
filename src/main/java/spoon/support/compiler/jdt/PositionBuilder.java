@@ -28,6 +28,7 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.ast.TypeParameter;
 import org.eclipse.jdt.internal.compiler.ast.TypeReference;
 import org.eclipse.jdt.internal.compiler.ast.Wildcard;
+import org.eclipse.jdt.internal.compiler.lookup.FieldBinding;
 import spoon.SpoonException;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCatch;
@@ -275,6 +276,9 @@ public class PositionBuilder {
 				// endPart2Position is after the initialization code
 				declarationSourcePosition = declarationSourcePosition.addDefaultValueEnd(((FieldDeclaration) variableDeclaration).endPart2Position);
 			}
+			if (isFirstInJointDeclaration(variableDeclaration)) {
+				declarationSourcePosition = declarationSourcePosition.addDefaultValueStart(variableDeclaration.sourceStart());
+			}
 			return declarationSourcePosition;
 		} else if (node instanceof TypeDeclaration && e instanceof CtPackage) {
 			// the position returned by JTD is equals to 0
@@ -454,6 +458,26 @@ public class PositionBuilder {
 			return SourcePosition.NOPOSITION;
 		}
 		return cf.createSourcePosition(cu, sourceStart, sourceEnd, lineSeparatorPositions);
+	}
+
+	private boolean isFirstInJointDeclaration(ASTNode node) {
+		if (node instanceof FieldDeclaration) {
+			FieldBinding[] bindings = ((FieldDeclaration) node).binding.declaringClass.fields();
+
+			int declarationStart = ((FieldDeclaration) node).declarationSourceStart;
+			int declarationEnd = ((FieldDeclaration) node).declarationSourceEnd;
+
+			for (FieldBinding binding : bindings) {
+				if (node == binding.sourceField()) {
+					continue;
+				}
+				if (binding.sourceField().sourceStart() > declarationStart && binding.sourceField().sourceEnd() < declarationEnd
+						&& binding.sourceField().sourceStart() < node.sourceStart()) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private int getParentsSourceStart() {

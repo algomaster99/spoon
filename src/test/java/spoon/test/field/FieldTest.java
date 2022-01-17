@@ -32,15 +32,13 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.code.CtReturn;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 import spoon.support.reflect.eval.VisitorPartialEvaluator;
+import spoon.support.sniper.internal.ElementSourceFragment;
 import spoon.test.field.testclasses.A;
 import spoon.test.field.testclasses.AddFieldAtTop;
 import spoon.test.field.testclasses.BaseClass;
@@ -222,5 +220,18 @@ public class FieldTest {
 
 	}
 
+	@Test
+	void test() {
+		Launcher launcher = new Launcher();
+		launcher.addInputResource("src/test/resources/JointDeclaration.java");
+
+		CtModel model = launcher.buildModel();
+
+		CtType<?> type = launcher.getFactory().Type().get("JointDeclaration");
+
+		ElementSourceFragment rootFragment = type.getOriginalSourceFragment();
+
+		rootFragment.getFirstChild();
+	}
 
 }

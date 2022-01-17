@@ -79,7 +79,7 @@ public class ElementSourceFragment implements SourceFragment {
 	 * @return offset of first character which belongs to this fragment
 	 */
 	public int getStart() {
-		if (firstChild != null) {
+		if (firstChild != null && !(this.getElement() instanceof CtField<?>)) {
 			return Math.min(getSourcePosition().getSourceStart(), firstChild.getStart());
 		}
 		return getSourcePosition().getSourceStart();
@@ -164,9 +164,9 @@ public class ElementSourceFragment implements SourceFragment {
 				// bug #3386: we cannot handle joint declaration yet
 				//so we ignore them, meaning that fields in joint declarations
 				// will be reprinted normally
-				if (f.isPartOfJointDeclaration()) {
-					return;
-				}
+//				if (f.isPartOfJointDeclaration()) {
+//					return;
+//				}
 
 				super.visitCtField(f);
 			}

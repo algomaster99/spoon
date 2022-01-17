@@ -25,6 +25,8 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 	/** for "int i=0, j=1", this would end at the comma separating i and j */
 	private int endDefaultValueDeclaration = -1;
 
+	private int startDefaultValueDeclaration = -1;
+
 	@Override
 	public int getDefaultValueEnd() {
 		return endDefaultValueDeclaration;
@@ -42,6 +44,18 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		try {
 			DeclarationSourcePositionImpl newPos = (DeclarationSourcePositionImpl) this.clone();
 			newPos.endDefaultValueDeclaration = endDefaultValueDeclaration;
+			return newPos;
+		} catch (CloneNotSupportedException e) {
+			throw new SpoonException(e);
+		}
+	}
+
+	@Override
+	public DeclarationSourcePosition addDefaultValueStart(int startDefaultValueDeclaration) {
+
+		try {
+			DeclarationSourcePositionImpl newPos = (DeclarationSourcePositionImpl) this.clone();
+			newPos.startDefaultValueDeclaration = startDefaultValueDeclaration;
 			return newPos;
 		} catch (CloneNotSupportedException e) {
 			throw new SpoonException(e);
@@ -81,6 +95,14 @@ public class DeclarationSourcePositionImpl extends CompoundSourcePositionImpl
 		return getFragment(getSourceStart(), getSourceEnd())
 				+ "\nmodifier = " + getFragment(getModifierSourceStart(), getModifierSourceEnd())
 				+ "\nname = " + getFragment(getNameStart(), getNameEnd());
+	}
+
+	@Override
+	public int getSourceStart() {
+		if (startDefaultValueDeclaration != -1) {
+			return startDefaultValueDeclaration;
+		}
+		return getDeclarationStart();
 	}
 
 	@Override
